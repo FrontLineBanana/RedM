@@ -41,13 +41,13 @@ namespace Emotes
             //Sets emoteList
             SetEmoteNames();
 
+            Debug.WriteLine("Emote Hash String Length: " + emoteHash.Length.ToString());
+            Debug.WriteLine("Custom Name String Length: " + customName.Length.ToString());
+
             //Prints Dictionary
-            foreach(string key in EmotesList.Keys)
+            foreach (string key in EmotesList.Keys)
             {
-                foreach(string value in EmotesList.Values)
-                {
-                    Debug.WriteLine(key + " - " + value);
-                }
+                Debug.WriteLine(key + " - " + EmotesList[key]);
             }
         }
 
@@ -80,7 +80,6 @@ namespace Emotes
                     CancelEmote();
                     PlayEmote(conditions);
                     CitizenFX.Core.Debug.WriteLine("Emote played");
-                    return;
                 }
                 else
                 {
@@ -103,7 +102,7 @@ namespace Emotes
 
             if (EmotesList.ContainsValue(conditions))
             {
-                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, GetPlayerPed(-1), emoteName, -1, false, false, false, 1.0, false);
+                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, Game.PlayerPed, emoteName, -1, false, false, false, 1.0, false);
                 CitizenFX.Core.Debug.WriteLine("Playing emote: " + emoteName);
             }
 
