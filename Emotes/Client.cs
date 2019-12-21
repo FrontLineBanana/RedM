@@ -102,7 +102,7 @@ namespace Emotes
 
             if (EmotesList.ContainsValue(conditions))
             {
-                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, Game.PlayerPed, emoteName, -1, false, false, false, 1.0, false);
+                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, player, emoteName, -1, false, false, false, 1.0, false);
                 CitizenFX.Core.Debug.WriteLine("Playing emote: " + emoteName);
             }
 
