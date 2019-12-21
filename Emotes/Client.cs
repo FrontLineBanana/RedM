@@ -34,10 +34,10 @@ namespace Emotes
         public Client()
         {
             CitizenFX.Core.Debug.WriteLine("Client for Emotes started");
-            EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
+            StartResource();
         }
 
-        private void OnClientResourceStart(string resourceName)
+        private void StartResource()
         {
             CitizenFX.Core.Debug.WriteLine("/e registered.");
 
