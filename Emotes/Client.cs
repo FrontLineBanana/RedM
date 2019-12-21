@@ -9,7 +9,9 @@ using static CitizenFX.Core.Native.API;
 
 // This project contains various emotes for a RedM server. Do emotes by typing /e [emotename], cancel by typing just /e
 
-// TODO: Figure out why e command is not registering. 
+// TODO: Get emotes working, add more emotes, make separate dictionary class, change /e to cancel emote and play new emote upon new command
+
+// Current main issue: The emote is not actually playing on the ped. (Either player ped is wrong or Hash)
 
 namespace Emotes
 {
@@ -34,57 +36,65 @@ namespace Emotes
         public Client()
         {
             CitizenFX.Core.Debug.WriteLine("Client for Emotes started");
-            EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
+            StartResource();
+
+            //Sets emoteList
+            SetEmoteNames();
         }
 
-        private void OnClientResourceStart(string resourceName)
+        private void StartResource()
         {
             CitizenFX.Core.Debug.WriteLine("/e registered.");
 
             RegisterCommand("e", new Action<int, List<object>, string>((source, args, raw) =>
             {
-                //Sets emoteList
-                SetEmoteNames();
+                //Sets a string from what was typed after /e
+                conditions = Convert.ToString(args[0]);
+                CitizenFX.Core.Debug.WriteLine("Conditions set.");
+                CitizenFX.Core.Debug.WriteLine("conditions = " + conditions + ".");
 
                 //Sets emote or clears emote if one is used and there is no space
-                if(!isInEmote && args.ToString() != "")
+                if (!isInEmote && args.Count() > 0)
                 {
-                    //Sets a string from what was typed after /e
-                    conditions = args.ToString();
-                    CitizenFX.Core.Debug.WriteLine("Conditions set.");
-                    CitizenFX.Core.Debug.WriteLine("conditions = " + conditions + ".");
-
                     //Compares the conditions with the library and plays the emote if available
                     PlayEmote(conditions);
                     CitizenFX.Core.Debug.WriteLine("Emote played");
                 }
-                else if(isInEmote && args.ToString() == "")
+                else if (isInEmote && conditions == "")
                 {
                     CancelEmote();
                     CitizenFX.Core.Debug.WriteLine("Emote canceled");
                 }
-                else
+                else if (isInEmote && conditions != "")
                 {
-                    CitizenFX.Core.Debug.WriteLine("Something fucked up.");
+                    CitizenFX.Core.Debug.WriteLine("Emote canceled");
+                    CancelEmote();
+                    PlayEmote(conditions);
                     return;
                 }
-
-                TriggerEvent("chat:addMessage", new
+                else
                 {
-                    color = new[] { 255, 0, 0 },
-                    args = new[] { "Task complete."}
-                });
+                    TriggerEvent("chat:addMessage", new
+                    {
+                        color = new[] { 255, 0, 0 },
+                        args = new[] { "Emote not found." }
+                    });
+                    CitizenFX.Core.Debug.WriteLine("Emote not found or bug because u dumb. :)");
+                    return;
+                }
             }), false);
         }
 
         void PlayEmote(string emoteName)
         {
-            
-            var player = GetPlayerPed(-1);
 
-            if(EmotesList.ContainsKey(conditions))
+            var player = GetPlayerPed(-1);
+            CitizenFX.Core.Debug.WriteLine("PlayerPed is: " + player.ToString());
+
+            if (EmotesList.ContainsValue(conditions))
             {
-                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, player, emoteName, -1, false);
+                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, player, emoteName, -1, false, false, false, 1.0, false);
+                CitizenFX.Core.Debug.WriteLine("Playing emote: " + emoteName);
             }
 
             isInEmote = true;
