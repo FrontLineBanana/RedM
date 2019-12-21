@@ -9,7 +9,7 @@ using static CitizenFX.Core.Native.API;
 
 // This project contains various emotes for a RedM server. Do emotes by typing /e [emotename], cancel by typing just /e
 
-// TODO: Get emotes working, add more emotes, make separate dictionary class, change /e to cancel emote and play new emote upon new command
+// TODO: Get emotes working, add more emotes, make separate dictionary class, change /e to cancel emote and play new emote upon new command, get error message to show for wrong input
 
 // Current main issue: The emote is not actually playing on the ped. (Either player ped is wrong or Hash)
 
@@ -40,6 +40,15 @@ namespace Emotes
 
             //Sets emoteList
             SetEmoteNames();
+
+            //Prints Dictionary
+            foreach(string key in EmotesList.Keys)
+            {
+                foreach(string value in EmotesList.Values)
+                {
+                    Debug.WriteLine(key + " - " + value);
+                }
+            }
         }
 
         private void StartResource()
@@ -89,12 +98,12 @@ namespace Emotes
         void PlayEmote(string emoteName)
         {
 
-            var player = GetPlayerPed(-1);
+            var player = PlayerPedId();
             CitizenFX.Core.Debug.WriteLine("PlayerPed is: " + player.ToString());
 
             if (EmotesList.ContainsValue(conditions))
             {
-                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, player, emoteName, -1, false, false, false, 1.0, false);
+                Function.Call(Hash._TASK_START_SCENARIO_IN_PLACE, GetPlayerPed(-1), emoteName, -1, false, false, false, 1.0, false);
                 CitizenFX.Core.Debug.WriteLine("Playing emote: " + emoteName);
             }
 
@@ -103,7 +112,7 @@ namespace Emotes
 
         void CancelEmote()
         {
-            var player = GetPlayerPed(-1);
+            var player = PlayerPedId();
 
             Function.Call(Hash.CLEAR_PED_TASKS, player);
 
@@ -115,25 +124,26 @@ namespace Emotes
             for (int i = 0; i < emoteHash.Length; i++)
             {
                 //Add Hashes and Custom Names
-                EmotesList.Add(emoteHash[i], customName[i]);
+                EmotesList.Add(customName[i], emoteHash[i]);
             }
 
             CitizenFX.Core.Debug.WriteLine("List set.");
 
-            for (int i = 0; i < emoteHash.Length; i++)
+           /* for (int i = 0; i < emoteHash.Length; i++)
             {
                 //Add IDs to the list
-                EmotesList.Add(i.ToString(), customName[i]);
+                EmotesList.Add(i.ToString(), emoteHash[i]);
             }
 
             CitizenFX.Core.Debug.WriteLine("IDs set.");
+            */
         }
 
         //Dictionary for holding the values and keys
         Dictionary<string, string> EmotesList = new Dictionary<string, string>();
 
         //List for Native Keys of emotes, in order with customName
-        private string[] emoteHash =
+        private readonly string[] emoteHash =
         {
             "WORLD_HUMAN_SMOKE_CIGAR",
             "WORLD_HUMAN_SMOKE",
@@ -142,7 +152,7 @@ namespace Emotes
 
 
         //List of emote names to type in chat, in order with emoteHash
-        private string[] customName =
+        private readonly string[] customName =
         {
             "cigar",
             "smoke",
