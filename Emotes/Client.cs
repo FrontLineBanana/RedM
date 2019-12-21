@@ -70,6 +70,7 @@ namespace Emotes
                     CitizenFX.Core.Debug.WriteLine("Emote canceled");
                     CancelEmote();
                     PlayEmote(conditions);
+                    CitizenFX.Core.Debug.WriteLine("Emote played");
                     return;
                 }
                 else
